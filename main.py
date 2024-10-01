@@ -3,7 +3,7 @@
 
 import nltk # for stopwords list
 import ssl # for initilizing stopwords list
-
+import math # for implementing sigmoid
 def initilize():
     """ Download nessessary list of stopwords from nltk """
     try:
@@ -27,7 +27,28 @@ def preprocess(textstring):
     words = [word for word in words if word not in nltk.corpus.stopwords.words('english')]
     print(words)
     pass
-def logisticalRegression(sample):
+
+def extract_features():
+    """ Takes in set of tokens and returns feature set
+    
+    output X = [x1,x2,x3,x4,x5]
+    
+    x1 = # of positive lexicons 
+
+    x2 = # of negative lexicons
+
+    x3 = if no ∈ sample (either 0 or 1 value)
+
+    x4 = log(word count) 
+    
+    x5 = tbd"""
+
+    pass
+
+def sigmoid(x):
+    """implements sigmoid function y = 1/ (1+e^-z)"""
+    return 1 / (1 + math.e**(-x))
+def logistical_regression(sample):
     """logreg function via sigmoid to return a value between 0-1
     representing the probability of a given class.
     If output > .5, it returns class 1,
@@ -36,4 +57,3 @@ def logisticalRegression(sample):
     pass
 
 initilize()
-preprocess("Not worth the money: Banks'book Oscilloscope Guide uses large print and offers little information and there are mistakes...There is some useful information there but not worth the high price.")
