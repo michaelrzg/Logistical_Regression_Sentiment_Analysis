@@ -13,11 +13,18 @@ def initilize():
     """Initilizees the model by downloading stopwords list, loading data, and preprocessing datasetsS"""
     download_stopwords()
     data = load_data()
-    # if data is not preprocessed uncomment below (this will take time)
-    # preprocess()
-    # if features are not extracted uncomment below
-    # extract_features(data[2])
-    # extract_features(data[3], False)
+    # if data is not preprocessed, preprocess() will run
+    try:
+        file = open("dataset/test_formatted.csv")
+    except FileNotFoundError:
+        preprocess()
+    # if features not extracted, run extract features()
+    try:
+        file = open("dataset/testing_features.csv")
+    except FileNotFoundError:
+        extract_features(data[2])
+        extract_features(data[3], False)
+
     
     return data
 
@@ -147,13 +154,15 @@ def logistical_regression(sample):
     else output <= .5 and returns class 0.
     :input is a sample"""
     pass
-
+# initilize data
 data = initilize()
+# store appropriately
 positive_words  = data[0]
 negative_words = data[1]
 training_set = data[2]
 testing_set = data[3]
 
+# load features from data
 training_features = load_features()
 testing_features = load_features(False)
 
