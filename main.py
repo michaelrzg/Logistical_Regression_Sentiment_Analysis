@@ -4,10 +4,12 @@
 import nltk # for stopwords list
 import ssl # for initilizing stopwords list
 import math # for implementing sigmoid
+import numpy as np # for numpy array
 import threading # for efficientcy
 import concurrent.futures # for thread management
 
-from preprocess_dataset import preprocess # preprocess_dataset.py file
+from preprocess_dataset import preprocess # from our preprocess_dataset.py file
+from logistical_regression import logistical_regression # from our logistical_regression.py file
 
 def initilize():
     """Initilizees the model by downloading stopwords list, loading data, and preprocessing datasetsS"""
@@ -148,17 +150,6 @@ def load_features(training=True):
         output.append(x)
     return output
 
-def sigmoid(x):
-    """implements sigmoid function y = 1/ (1+e^-z)"""
-    return 1 / (1 + math.e**(-x))
-def logistical_regression(sample):
-    """logreg function via sigmoid to return a value between 0-1
-    representing the probability of a given class.
-    If output > .5, it returns class 1,
-    else output <= .5 and returns class 0.
-    :input is a sample"""
-    # TODO
-    pass
 # initilize data
 data = initilize()
 # store appropriately
@@ -167,8 +158,15 @@ negative_words = data[1]
 training_set = data[2]
 testing_set = data[3]
 
-# load features from data
+# load features from training data and convert to numpy array
 training_features = load_features()
-testing_features = load_features(False)
+training_features = np.array(training_features)
 
-print(testing_features)
+# load features from testing data and convert to numpy array
+testing_features = load_features(False)
+testing_features = np.array(testing_features)
+#create logistical regression model object form logistical_regression.py
+logreg = logistical_regression()
+# fit (train) the model on our training set
+logreg.fit(training_features[:,[0,1,2,3,4]],training_features[:,5])
+#print(testing_features)
