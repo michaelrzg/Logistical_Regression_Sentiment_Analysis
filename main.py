@@ -4,7 +4,19 @@
 import nltk # for stopwords list
 import ssl # for initilizing stopwords list
 import math # for implementing sigmoid
+import threading # for efficientcy
+import concurrent.futures # for thread management
+
+
 def initilize():
+    """Initilizees the model by downloading stopwords list, loading data, and preprocessing datasetsS"""
+    download_stopwords()
+    data = load_data()
+
+    return data
+
+
+def download_stopwords():
     """ Download nessessary list of stopwords from nltk """
     try:
         _create_unverified_https_context = ssl._create_unverified_context
@@ -15,18 +27,61 @@ def initilize():
     nltk.download('stopwords')
     return
 
-def preprocess(textstring):
+
+def load_data():
+    """Load data (positive words, negative words, training set and testing set)
+    
+    returns [positive_words,negative_words,train_set,test_set]"""
+    try:
+        # load positive words into array
+        positive = open("dataset/positive.txt")
+        positive_words = []
+        for line in positive:
+            line = line.replace('\n','')
+            positive_words.append(line)
+        
+        # load negative words into array
+        negative = open("dataset/negative.txt")
+        negative_words = []
+        for line in negative:
+            line = line.replace('\n','')
+            negative_words.append(line)
+        
+        # load testing dataset into array of tuples [data:string, label:int]
+        test = open("dataset/test_amazon.csv")
+        test_set = []
+        for line in test:
+            x = line.split(",")
+            x[1] = x[1].replace("\n","")
+            test_set.append([x[1],int(x[0])])
+        
+        # load training dataset into array of tuples [data:string, label:int]
+        training = open("dataset/train_amazon.csv")
+        train_set = []
+        for line in training:
+            x = line.split(",")
+            x[1] = x[1].replace("\n","")
+            train_set.append([x[1],int(x[0])])
+    except FileNotFoundError:
+        print("one or more files not found. Check paths")
+    
+    return [positive_words,negative_words,train_set,test_set]
+
+
+def remove_stopwords(textstring, outputs,i):
     """Preprocesses a string by removing stop words, symbols, digits, etc.
     outputs a list of tokens."""
     
     # assert that a string was passed
-    assert isinstance(textstring,str) , "THIS IS NOT A STRING"
+    assert isinstance(textstring[0],str) , "THIS IS NOT A STRING"
     # parse string into array of words
     words = textstring.split(" ")
     # remove stopwords
     words = [word for word in words if word not in nltk.corpus.stopwords.words('english')]
-    print(words)
-    pass
+    outputs.append([i,words])
+    return
+
+
 
 def extract_features():
     """ Takes in set of tokens and returns feature set
@@ -56,4 +111,5 @@ def logistical_regression(sample):
     :input is a sample"""
     pass
 
-initilize()
+data = initilize()
+
