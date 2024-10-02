@@ -18,6 +18,7 @@ def initilize():
     # if features are not extracted uncomment below
     # extract_features(data[2])
     # extract_features(data[3], False)
+    
     return data
 
 
@@ -120,10 +121,21 @@ def extract_features(dataset, training=True):
         x4 = 1 if sample[0].count("!")>0 else 0
         x5 = math.log(len(sample[0].split(" ")),10)
         out.write(f"{x1},{x2},{x3},{x4},{x5},{sample[1]}\n")
-        
+    return
 
-
-    pass
+def load_features(training=True):
+    """Load features from pre-extracted file after extract_features has been run"""
+    output = []
+    if training:
+        file = open("dataset/training_features.csv")
+       
+    else:
+        file = open("dataset/testing_features.csv")
+    for line in file:
+        line =line.split(",")
+        x = [int(line[0]), int(line[1]), int(line[2]), int(line[3]), float(line[4]), int(line[5].replace("\n",""))]
+        output.append(x)
+    return output
 
 def sigmoid(x):
     """implements sigmoid function y = 1/ (1+e^-z)"""
@@ -142,7 +154,7 @@ negative_words = data[1]
 training_set = data[2]
 testing_set = data[3]
 
-extract_features(training_set)
-print("half")
-extract_features(testing_set, False)
+training_features = load_features()
+testing_features = load_features(False)
 
+print(testing_features)

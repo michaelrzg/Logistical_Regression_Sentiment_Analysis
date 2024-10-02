@@ -2,4 +2,6 @@ This repo holds implement a logistic regression algorithm in Python used predict
 https://github.com/MuhammedBuyukkinaci/TensorFlow-Sentiment-Analysis-on-Amazon-ReviewsData/blob/master/dataset/
 
 How to recreate this project:<br>
-1: run preprocess_dataset.py to remove stop words from data
+1: preprocess() to preprocess test_amazon.csv and train_amazon.csv (uncomment line 17)
+2: extract_features() on both preprocessed datasets to extract features (uncomment line 18 and 19)
+3: load_features() to load extracted features into memory
