@@ -35,3 +35,23 @@ The load_features() function will run every time the model is run, and will load
 (Positive word count, Negative word count, "no" count, "!" count, log(word count), class)
 
 - 2 , 0 , 0 , 1 , 1.1139433523068367 , 1
+
+<br><b>Step 4:</b><br><br>
+Its time for our model to learn the features. Firstly, we 'fit' the model to our features which is our training step.<br><br>
+For our features set X and label set y, we call logistical_regression.fit(X,y):<br>
+X = m x n<br>
+m = # of data samples<br>
+n = number of feature<br>
+y = 1 x m matrix of correct labels for X<br><br>
+fit() works by initilizing a weights to a (1 x n) matrix of zeros and bias to 0<br>
+For n itterations:<br>
+
+- We take the dot product of our sample and weights matricies, then add our bias (similar to linear regression).
+  By applying sigmoid to this output, we are converting this to logisitcal regression, and we get an output value between 0 and 1<br>
+- We take this output, determine the error (loss), and take the derivative of that to determine our grad_weight and grad_bias
+- We then multiply these values with our learning rate and subtract them from our weights and bias to determine our new weights for the next itteration
+- By the end of n itterations, we have 'optimized' our weights and biases based on slowly approaching our local minimum for our loss funciton
+
+<br><b>Step 5:</b><br><br>
+Final step is to run and generate our accuracy and confusion matrix:<br>
+The logistical_regression.run() function takes in a sample and its expected output, and runs the predict on that sample. It then calculates the accuracy as a function of correct/total and calculates the confusion matrix, storing our true positive (TP), true negative (TN), false positive (FP), False Negative(FN) values.
