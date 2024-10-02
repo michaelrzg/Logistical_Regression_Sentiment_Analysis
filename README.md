@@ -15,7 +15,7 @@ notes:
 <br><b>Step 2:</b><br><br> The second step is to extract features from our now preprocessed data.
 The extract_features() function takes in both test_formatted.csv and train_formatted.csv and outputs 2 new files:<br>
 
--testing_features.csv : holds all features as well as class labels from testing dataset
+-testing_features.csv : holds all features as well as class labels from testing dataset<br>
 -training_features.csv : holds all features as well as class labels from training dataset
 <br><br>
 notes:
