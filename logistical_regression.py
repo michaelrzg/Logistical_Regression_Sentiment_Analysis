@@ -8,7 +8,7 @@ class logistical_regression():
     representing the probability of a given class. If output > .5, it returns class 1,
     else output <= .5 and returns class 0."""
     #constructor
-    def __init__(self, learning_rate=.0001,itterations=1000) -> None:
+    def __init__(self, learning_rate=.01,itterations=5000) -> None:
         self.lr = learning_rate
         self.itterations = itterations
         self.weights = None
@@ -17,7 +17,7 @@ class logistical_regression():
 
     def sigmoid(self,x):
         """implements sigmoid function y = 1/ (1+e^-z)"""
-        return 1 / (1 + math.e**(-x))
+        return 1 / (1 + np.exp(-x))
     
     def fit(self, sample_X, desired_attribute_y):
         """This function is our 'training' step. 
@@ -52,9 +52,40 @@ class logistical_regression():
             self.bias = self.bias - (self.lr * grad_bias)
 
     def predict(self, sample):
-        """Use our trained weights and bias to predict a novel sample"""
+        """Use our trained weights and bias to predict a novel set and return set of labels"""
 
         # to predict a given sample, we run the same prediction as before but now with our trained weights
-        pred = self.sigmoid((np.dot(sample,self.weights) + self.bias))
+        pred = self.sigmoid(np.dot(sample,self.weights) + self.bias)
 
-        return [0 if x>=.5 else 1 for x in pred]
+        return [1 if x>.5 else 0 for x in pred]
+    def run(self, sample, expected):
+        """Use our trained weights and bias to predict a novel set, then calculates accuracy and confusion matrix"""
+        # run pred and get output list of labels
+        pred = self.predict(sample)
+        # store true positive (TP), true negative (TN), false positive (FP), False Negative(FN)
+        TP = 0
+        TN = 0
+        FP = 0
+        FN = 0
+        correct=0
+        for i in range(len(pred)):
+            if(pred[i] == 0 and pred[i] == expected[i]):
+                TN+=1
+                correct+=1
+            elif(pred[i] ==1 and pred[i] == expected[i]):
+                TP+=1
+                correct+=1
+            elif(pred[i] ==0 and pred[i] != expected[i]):
+                FN +=1
+            else:
+                FP +=1
+        print("Accuracy: ", correct/len(pred),
+              "\n Confuion Matrix:",
+              "\n   +        -"
+              "\n+ ",TP,"  ", FP,
+              "\n- ",FP, "  ", FN)
+                
+
+
+
+

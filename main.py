@@ -14,7 +14,7 @@ from logistical_regression import logistical_regression # from our logistical_re
 def initilize():
     """Initilizees the model by downloading stopwords list, loading data, and preprocessing datasetsS"""
     #download list of stopwords from nltk
-    download_stopwords()
+    #download_stopwords()
 
     # if data is not preprocessed, preprocess() will run
     try:
@@ -169,4 +169,5 @@ testing_features = np.array(testing_features)
 logreg = logistical_regression()
 # fit (train) the model on our training set
 logreg.fit(training_features[:,[0,1,2,3,4]],training_features[:,5])
+logreg.run(testing_features[:,[0,1,2,3,4]],testing_features[:,5])
 #print(testing_features)
