@@ -7,17 +7,21 @@ import math # for implementing sigmoid
 import threading # for efficientcy
 import concurrent.futures # for thread management
 
-from preprocess_dataset import preprocess
+from preprocess_dataset import preprocess # preprocess_dataset.py file
 
 def initilize():
     """Initilizees the model by downloading stopwords list, loading data, and preprocessing datasetsS"""
+    #download list of stopwords from nltk
     download_stopwords()
-    data = load_data()
+
     # if data is not preprocessed, preprocess() will run
     try:
         file = open("dataset/test_formatted.csv")
     except FileNotFoundError:
         preprocess()
+    
+    # load preprocessed data
+    data = load_data()
     # if features not extracted, run extract features()
     try:
         file = open("dataset/testing_features.csv")
@@ -153,6 +157,7 @@ def logistical_regression(sample):
     If output > .5, it returns class 1,
     else output <= .5 and returns class 0.
     :input is a sample"""
+    # TODO
     pass
 # initilize data
 data = initilize()
