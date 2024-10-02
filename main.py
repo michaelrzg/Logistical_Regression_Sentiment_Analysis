@@ -128,11 +128,11 @@ def extract_features(dataset, training=True):
     else:
         out = open("dataset/testing_features.csv", 'w')
     for sample in dataset:
-        x1 = len([x for x in sample[0].split(" ") if positive_words.count(x)>0])
-        x2 =len([x for x in sample[0].split(" ") if negative_words.count(x)>0])
-        x3 = 1 if sample[0].count("no")>0 else 0
+        x1 = len([x for x in sample[0].split(" ") if data[0].count(x)>0])
+        x2 =len([x for x in sample[0].split(" ") if data[1].count(x)>0])
+        x3 = 1 if sample[0].count("not")>0 else 0
         x4 = 1 if sample[0].count("!")>0 else 0
-        x5 = math.log(len(sample[0].split(" ")),10)
+        x5 = len(sample[0].split(" "))
         out.write(f"{x1},{x2},{x3},{x4},{x5},{sample[1]}\n")
     return
 
