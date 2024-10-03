@@ -20,7 +20,9 @@ def initilize():
     try:
         file = open("dataset/test_formatted.csv")
     except FileNotFoundError:
-        preprocess()
+        print("Preprocessing...")
+        preprocesser = preprocess()
+        preprocesser.preprocess_dataset()
     
     # load preprocessed data
     data = load_data()

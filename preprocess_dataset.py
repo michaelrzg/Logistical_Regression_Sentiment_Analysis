@@ -1,6 +1,6 @@
 import nltk
 class preprocess:
-    def remove_stopwords(textstring):
+    def remove_stopwords(self,textstring):
         """Preprocesses a string by removing stop words, symbols, digits, etc.
         outputs a list of tokens."""
         
@@ -31,7 +31,7 @@ class preprocess:
                 x.replace(",","")
                 if x.count("\n")>0:
                     addnewline = False
-                test_data_output_file.write(f"{x} ")
+                test_data_output_file.write(f"{x.lower()} ")
             if(addnewline):
                 test_data_output_file.write("\n")
         for line in train_data_raw:
@@ -43,7 +43,7 @@ class preprocess:
                 x.replace(",","")
                 if x.count("\n")>0:
                     addnewline = False
-                train_data_output_file.write(f"{x} ")
+                train_data_output_file.write(f"{x.lower()} ")
             if(addnewline):
                 train_data_output_file.write("\n")
             
