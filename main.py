@@ -25,11 +25,7 @@ def initilize():
     # load preprocessed data
     data = load_data()
     # if features not extracted, run extract features()
-    try:
-        file = open("dataset/testing_features.csv")
-    except FileNotFoundError:
-        extract_features(data[2])
-        extract_features(data[3], False)
+    
 
     
     return data
@@ -53,21 +49,9 @@ def load_data():
     returns [positive_words,negative_words,train_set,test_set]"""
     try:
         # load positive words into array
-        positive = open("dataset/positive.txt")
-        positive_words = []
-        for line in positive:
-            line = line.replace('\n','')
-            line = line.lower()
-            positive_words.append(line)
-        
+        positive_words = nltk.corpus.opinion_lexicon.positive()  
         # load negative words into array
-        negative = open("dataset/negative.txt")
-        negative_words = []
-        for line in negative:
-            line = line.replace('\n','')
-            line = line.lower()
-            negative_words.append(line)
-        
+        negative_words = nltk.corpus.opinion_lexicon.negative()
         # load testing dataset into array of tuples [data:string, label:int]
         test = open("dataset/test_formatted.csv")
         test_set = []
@@ -105,7 +89,6 @@ def remove_stopwords(textstring, outputs,i):
     return
 
 
-
 def extract_features(dataset, training=True):
     """ Takes in set of tokens and returns feature set
     
@@ -117,7 +100,7 @@ def extract_features(dataset, training=True):
 
     x3 = if no ∈ sample (either 0 or 1 value)
 
-    x4 = ∃ '!' ∈ sample (either 0 or 1)
+    x4 = count("!")
 
     x5 = log(word count) 
     
@@ -125,15 +108,20 @@ def extract_features(dataset, training=True):
     """
     if training:
         out = open("dataset/training_features.csv",'w')
+        print("Extracting training set features...")
     else:
         out = open("dataset/testing_features.csv", 'w')
+        print("Extracting testing set features...")
+    count=0
     for sample in dataset:
         x1 = len([x for x in sample[0].split(" ") if data[0].count(x)>0])
         x2 =len([x for x in sample[0].split(" ") if data[1].count(x)>0])
         x3 = 1 if sample[0].count("not")>0 else 0
-        x4 = 1 if sample[0].count("!")>0 else 0
+        x4 = sample[0].count("!")
         x5 = len(sample[0].split(" "))
         out.write(f"{x1},{x2},{x3},{x4},{x5},{sample[1]}\n")
+        count = count+1
+        print(count/len(dataset))
     return
 
 def load_features(training=True):
@@ -152,6 +140,11 @@ def load_features(training=True):
 
 # initilize data
 data = initilize()
+try:
+    file = open("dataset/testing_features.csv")
+except FileNotFoundError:
+    extract_features(data[2])
+    extract_features(data[3], False)
 # store appropriately
 positive_words  = data[0]
 negative_words = data[1]
@@ -166,8 +159,11 @@ training_features = np.array(training_features)
 testing_features = load_features(False)
 testing_features = np.array(testing_features)
 #create logistical regression model object form logistical_regression.py
+print(testing_features)
 logreg = logistical_regression()
 # fit (train) the model on our training set
+print("Training...")
 logreg.fit(training_features[:,[0,1,2,3,4]],training_features[:,5])
+print("Testing...")
 logreg.run(testing_features[:,[0,1,2,3,4]],testing_features[:,5])
 #print(testing_features)
