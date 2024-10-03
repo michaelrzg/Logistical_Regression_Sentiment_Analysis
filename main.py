@@ -7,7 +7,7 @@ import math # for implementing sigmoid
 import numpy as np # for numpy array
 import threading # for efficientcy
 import concurrent.futures # for thread management
-
+import time
 from preprocess_dataset import preprocess # from our preprocess_dataset.py file
 from logistical_regression import logistical_regression # from our logistical_regression.py file
 
@@ -89,8 +89,10 @@ def remove_stopwords(textstring, outputs,i):
     words = [word for word in words if word not in nltk.corpus.stopwords.words('english')]
     outputs.append([i,words])
     return
-
-
+data = initilize()
+poswordsdict = dict(zip(data[0],data[0]))
+negwwordsdict = dict(zip(data[1],data[1]))
+lock = threading.Lock()
 def extract_features(dataset, training=True):
     """ Takes in set of tokens and returns feature set
     
@@ -108,28 +110,22 @@ def extract_features(dataset, training=True):
     
     c = class (1 = positive class 0 = negative class)
     """
-    if training:
-        out = open("dataset/training_features.csv",'w')
-        print("Extracting training set features...")
-    else:
-        out = open("dataset/testing_features.csv", 'w')
-        print("Extracting testing set features...")
+
     count=0
     for sample in dataset:
-        x1 = 0
-        x2 = 0
-        for i in range(len(sample)):
-            if sample[i] in data[0]:
-                if i>0 and sample[i-1] in data[1]:
-                    x2+=1
-                else:
-                    x1+=1
-
-        x2 +=len([x for x in sample[0].split(" ") if data[1].count(x)>0])
-        x3 = 1 if sample[0].count("no")>0 else 0
+        x1 = len([x for x in sample[0].split(" ") if poswordsdict.get(x,False)==x])     
+        x2 =len([x for x in sample[0].split(" ") if negwwordsdict.get(x,False)==x])
+        x3 = 1 if sample[0].count("not")>0 else 0
         x4 = sample[0].count("!")
         x5 = len(sample[0].split(" "))
+        print(count)
+        lock.acquire()
+        if training:
+            out = open("dataset/training_features.csv",'a')
+        else:
+            out = open("dataset/testing_features.csv", 'a')
         out.write(f"{x1},{x2},{x3},{x4},{x5},{sample[1]}\n")
+        lock.release()
         count = count+1
         print(count/len(dataset))
     return
@@ -148,13 +144,53 @@ def load_features(training=True):
         output.append(x)
     return output
 
-# initilize data
-data = initilize()
+# initilize features
 try:
-    file = open("dataset/testing_features.csv")
+    f = open("dataset/training_features.csv")
 except FileNotFoundError:
-    extract_features(data[2])
-    extract_features(data[3], False)
+    threads=[]
+
+    q1= data[2][:37500]
+    q2= data[2][37500:75000]
+    q3 = data[2][75000:112500]
+    q4 = data[2][112500:]
+    x =threading.Thread(target=extract_features, args = [q1])
+    x.start()
+    threads.append(x)
+    y =threading.Thread(target=extract_features, args = [q2])
+    y.start()
+    threads.append(y)
+    z =threading.Thread(target=extract_features, args = [q3])
+    z.start()
+    threads.append(z)
+    a =threading.Thread(target=extract_features, args = [q4])
+    a.start()
+    threads.append(a)
+    for t in threads:
+        t.join()
+try: 
+    f = open("dataset/testing_features.csv")
+except FileNotFoundError:
+    threads=[]
+
+    q1= data[3][:7500]
+    q2= data[3][7500:15000]
+    q3 = data[3][15000:22500]
+    q4 = data[3][22500:]
+    x =threading.Thread(target=extract_features, args = [q1,False])
+    x.start()
+    threads.append(x)
+    y =threading.Thread(target=extract_features, args = [q2,False])
+    y.start()
+    threads.append(y)
+    z =threading.Thread(target=extract_features, args = [q3,False])
+    z.start()
+    threads.append(z)
+    a =threading.Thread(target=extract_features, args = [q4,False])
+    a.start()
+    threads.append(a)
+    for t in threads:
+        t.join()
 # store appropriately
 positive_words  = data[0]
 negative_words = data[1]
