@@ -69,21 +69,23 @@ class logistical_regression():
         FN = 0
         correct=0
         for i in range(len(pred)):
-            if(pred[i] == 0 and pred[i] == expected[i]):
+            if(pred[i] == 0 and expected[i] == 0.0):
                 TN+=1
                 correct+=1
-            elif(pred[i] ==1 and pred[i] == expected[i]):
+            elif(pred[i] ==1 and expected[i] == 1.0):
                 TP+=1
                 correct+=1
-            elif(pred[i] ==0 and pred[i] != expected[i]):
+            elif(pred[i] ==0 and expected[i] == 1.0):
                 FN +=1
-            else:
+            elif(pred[i] ==1 and expected[i] == 0.0):
                 FP +=1
+            else:
+                print(pred[i],expected[i])
         print("Accuracy: ", correct/len(pred),
               "\n Confuion Matrix:",
               "\n   +        -"
-              "\n+ ",TP,"  ", FP,
-              "\n- ",FP, "  ", FN)
+              "\n+ ",TP,"  ", FN,
+              "\n- ",FP, "  ", TN)
                 
 
 
