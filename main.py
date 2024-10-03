@@ -55,7 +55,7 @@ def load_data():
         # load negative words into array
         negative_words = nltk.corpus.opinion_lexicon.negative()
         # load testing dataset into array of tuples [data:string, label:int]
-        test = open("dataset/test_formatted.csv")
+        test = open("dataset/test_formatted.csv", encoding="utf8")
         test_set = []
         for line in test:
             x = line.split(",")
@@ -64,7 +64,7 @@ def load_data():
             test_set.append([x[1],int(x[0])])
         
         # load training dataset into array of tuples [data:string, label:int]
-        training = open("dataset/train_formatted.csv")
+        training = open("dataset/train_formatted.csv", encoding="utf8")
         train_set = []
         for line in training:
             x = line.split(",")
@@ -116,9 +116,17 @@ def extract_features(dataset, training=True):
         print("Extracting testing set features...")
     count=0
     for sample in dataset:
-        x1 = len([x for x in sample[0].split(" ") if data[0].count(x)>0])
-        x2 =len([x for x in sample[0].split(" ") if data[1].count(x)>0])
-        x3 = 1 if sample[0].count("not")>0 else 0
+        x1 = 0
+        x2 = 0
+        for i in range(len(sample)):
+            if sample[i] in data[0]:
+                if i>0 and sample[i-1] in data[1]:
+                    x2+=1
+                else:
+                    x1+=1
+
+        x2 +=len([x for x in sample[0].split(" ") if data[1].count(x)>0])
+        x3 = 1 if sample[0].count("no")>0 else 0
         x4 = sample[0].count("!")
         x5 = len(sample[0].split(" "))
         out.write(f"{x1},{x2},{x3},{x4},{x5},{sample[1]}\n")
