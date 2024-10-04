@@ -8,7 +8,7 @@ class logistical_regression():
     representing the probability of a given class. If output > .5, it returns class 1,
     else output <= .5 and returns class 0."""
     #constructor
-    def __init__(self, learning_rate=.01,itterations=5000) -> None:
+    def __init__(self, learning_rate=.01,itterations=1000) -> None:
         self.lr = learning_rate
         self.itterations = itterations
         self.weights = None
@@ -56,8 +56,11 @@ class logistical_regression():
 
         # to predict a given sample, we run the same prediction as before but now with our trained weights
         pred = self.sigmoid(np.dot(sample,self.weights) + self.bias)
-
-        return [1 if x>.5 else 0 for x in pred]
+        if len(sample.shape)==1:
+            val = 1 if pred>=.5 else 0
+            return val
+        else:
+            return [1 if x>.5 else 0 for x in pred]
     def run(self, sample, expected):
         """Use our trained weights and bias to predict a novel set, then calculates accuracy and confusion matrix"""
         # run pred and get output list of labels

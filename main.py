@@ -144,6 +144,25 @@ def load_features(training=True):
         output.append(x)
     return output
 
+def live_demo():
+    while True:
+        string = input("Enter a string to determine sentiment (enter quit to exit):\n")
+        if string == "quit":
+            return
+        x1 = len([x for x in string.split(" ") if poswordsdict.get(x,False)==x])     
+        x2 =len([x for x in string.split(" ") if negwwordsdict.get(x,False)==x])
+        x3 = 1 if string.count("not")>0 else 0
+        x4 = string.count("!")
+        x5 = len(string.split(" "))
+        prediction = logreg.predict(np.array([x1,x2,x3,x4,x5]))
+        match prediction:
+            case 1:
+                print("This comment was positive!")
+            case 0:
+                print("This comment was negative!")
+            case _:
+                print("An error occured.")
+        
 # initilize features
 try:
     f = open("dataset/training_features.csv")
@@ -205,7 +224,7 @@ training_features = np.array(training_features)
 testing_features = load_features(False)
 testing_features = np.array(testing_features)
 #create logistical regression model object form logistical_regression.py
-print(testing_features)
+#print(testing_features)
 logreg = logistical_regression()
 # fit (train) the model on our training set
 print("Training...")
@@ -213,3 +232,4 @@ logreg.fit(training_features[:,[0,1,2,3,4]],training_features[:,5])
 print("Testing...")
 logreg.run(testing_features[:,[0,1,2,3,4]],testing_features[:,5])
 #print(testing_features)
+live_demo()
