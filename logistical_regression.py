@@ -63,7 +63,7 @@ class logistical_regression():
                 val = 1
             else:
                 val=-1
-            print("Sample Features: ", sample, "Prob: " , pred)
+            print("\nSample Features: ", sample, "Classifier Output: " , pred)
             return val
         else:
             return [1 if x>.5 else 0 for x in pred]

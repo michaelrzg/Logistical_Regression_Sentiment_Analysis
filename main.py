@@ -129,21 +129,18 @@ def extract_features(dataset, training=True):
             print("Progress on thread ID ", threading.get_ident(), ": ", 100*(count/len(dataset)), "%")
     return
 def extract1(sample):
-    x1 = 5*len([x for x in sample.split(" ") if poswordsdict.get(x,False)==x])     
+    x1 = len([x for x in sample.split(" ") if poswordsdict.get(x,False)==x])     
     x2 =len([x for x in sample.split(" ") if negwwordsdict.get(x,False)==x])
     x3 = 0
-    x4 = 0
-    x5 = 0
+    x4 = len(sample.split(" "))
+    x5 = sample.count("love") + sample.count("amazing")  + sample.count("loved")+  + sample.count("great")
     ngrams = extract_ngrams(sample,2)
     for n in ngrams:
         if negwwordsdict.get(n[0],False) or n[0] == "not" or n[0] == "dont"  or n[0] == "don't" or n[0] == "didn't" and poswordsdict.get(n[1],False):
             # negative negation 
-            x2+=1
+            x2+=3
+            x1-=1
             x3+=1
-        elif  negwwordsdict.get(n[0],False) and  negwwordsdict.get(n[1],False):
-            # double negation 
-            x1+=1
-            x4-=1
     return (x1,x2,x3,x4,x5)
 def extract_ngrams(text, n):
   """Extracts n-grams from a given text."""
@@ -166,14 +163,14 @@ def load_features(training=True):
 
 def live_demo():
     while True:
-        string = input("Enter a string to determine sentiment (enter quit to exit):\n")
+        string = input("\nEnter a string to determine sentiment (enter quit to exit):  ")
         if string == "quit":
             return
         x1,x2,x3,x4,x5 = extract1(string)
         prediction = logreg.predict(np.array([x1,x2,x3,x4,x5]))
         match prediction:
             case 1:
-                print("This comment was positive!")
+                print("This comment was positive!\n")
             case -1:
                 print("This comment was negative!")
             case 0:
