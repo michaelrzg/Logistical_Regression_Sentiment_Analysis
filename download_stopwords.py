@@ -12,3 +12,4 @@ else:
 
 nltk.download('stopwords')
 nltk.download('opinion_lexicon')
+nltk.download('punkt_tab')

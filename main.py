@@ -10,7 +10,7 @@ import concurrent.futures # for thread management
 import time
 from preprocess_dataset import preprocess # from our preprocess_dataset.py file
 from logistical_regression import logistical_regression # from our logistical_regression.py file
-
+import os
 def initilize():
     """Initilizees the model by downloading stopwords list, loading data, and preprocessing datasetsS"""
     #download list of stopwords from nltk
@@ -113,23 +113,43 @@ def extract_features(dataset, training=True):
 
     count=0
     for sample in dataset:
-        x1 = len([x for x in sample[0].split(" ") if poswordsdict.get(x,False)==x])     
-        x2 =len([x for x in sample[0].split(" ") if negwwordsdict.get(x,False)==x])
-        x3 = 1 if sample[0].count("not")>0 else 0
-        x4 = sample[0].count("!")
-        x5 = len(sample[0].split(" "))
-        print(count)
+        
+
+
         lock.acquire()
         if training:
             out = open("dataset/training_features.csv",'a')
         else:
             out = open("dataset/testing_features.csv", 'a')
+        x1,x2,x3,x4,x5 = extract1(sample[0])
         out.write(f"{x1},{x2},{x3},{x4},{x5},{sample[1]}\n")
         lock.release()
-        count = count+1
-        print(count/len(dataset))
+        count+=1
+        if count%(len(dataset)/5)==0:
+            print("Progress on thread ID ", threading.get_ident(), ": ", 100*(count/len(dataset)), "%")
     return
-
+def extract1(sample):
+    x1 = 5*len([x for x in sample.split(" ") if poswordsdict.get(x,False)==x])     
+    x2 =len([x for x in sample.split(" ") if negwwordsdict.get(x,False)==x])
+    x3 = 0
+    x4 = 0
+    x5 = 0
+    ngrams = extract_ngrams(sample,2)
+    for n in ngrams:
+        if negwwordsdict.get(n[0],False) or n[0] == "not" or n[0] == "dont"  or n[0] == "don't" or n[0] == "didn't" and poswordsdict.get(n[1],False):
+            # negative negation 
+            x2+=1
+            x3+=1
+        elif  negwwordsdict.get(n[0],False) and  negwwordsdict.get(n[1],False):
+            # double negation 
+            x1+=1
+            x4-=1
+    return (x1,x2,x3,x4,x5)
+def extract_ngrams(text, n):
+  """Extracts n-grams from a given text."""
+  tokens = nltk.word_tokenize(text)
+  ngrams = list(nltk.ngrams(tokens, n))
+  return ngrams
 def load_features(training=True):
     """Load features from pre-extracted file after extract_features has been run"""
     output = []
@@ -149,24 +169,25 @@ def live_demo():
         string = input("Enter a string to determine sentiment (enter quit to exit):\n")
         if string == "quit":
             return
-        x1 = len([x for x in string.split(" ") if poswordsdict.get(x,False)==x])     
-        x2 =len([x for x in string.split(" ") if negwwordsdict.get(x,False)==x])
-        x3 = 1 if string.count("not")>0 else 0
-        x4 = string.count("!")
-        x5 = len(string.split(" "))
+        x1,x2,x3,x4,x5 = extract1(string)
         prediction = logreg.predict(np.array([x1,x2,x3,x4,x5]))
         match prediction:
             case 1:
                 print("This comment was positive!")
-            case 0:
+            case -1:
                 print("This comment was negative!")
+            case 0:
+                print("This comment was neutral!")
             case _:
                 print("An error occured.")
         
 # initilize features
 try:
     f = open("dataset/training_features.csv")
+    if f.readline() =="":
+        raise FileNotFoundError
 except FileNotFoundError:
+    print("Extracting training features from train_fornatted.csv on 4 threads...")
     threads=[]
 
     q1= data[2][:37500]
@@ -189,7 +210,10 @@ except FileNotFoundError:
         t.join()
 try: 
     f = open("dataset/testing_features.csv")
+    if f.readline() =="":
+        raise FileNotFoundError
 except FileNotFoundError:
+    print("Extracting testing features from test_formatted.csv on 4 threads...")
     threads=[]
 
     q1= data[3][:7500]

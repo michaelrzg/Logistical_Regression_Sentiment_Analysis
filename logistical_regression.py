@@ -57,7 +57,13 @@ class logistical_regression():
         # to predict a given sample, we run the same prediction as before but now with our trained weights
         pred = self.sigmoid(np.dot(sample,self.weights) + self.bias)
         if len(sample.shape)==1:
-            val = 1 if pred>=.5 else 0
+            if pred > .49 and pred < .51:
+                val = 0
+            elif pred >.51:
+                val = 1
+            else:
+                val=-1
+            print("Sample Features: ", sample, "Prob: " , pred)
             return val
         else:
             return [1 if x>.5 else 0 for x in pred]
@@ -71,6 +77,8 @@ class logistical_regression():
         FP = 0
         FN = 0
         correct=0
+        falseposfile = open("dataset/false_positives.csv", 'a')
+        falsenegfile = open("dataset/false_negatives.csv",'a')
         for i in range(len(pred)):
             if(pred[i] == 0 and expected[i] == 0.0):
                 TN+=1
@@ -80,8 +88,10 @@ class logistical_regression():
                 correct+=1
             elif(pred[i] ==0 and expected[i] == 1.0):
                 FN +=1
+                falsenegfile.write(f"{int(sample[i][0])},{int(sample[i][1])},{int(sample[i][2])},{int(sample[i][3])},{int(sample[i][4])}\n")
             elif(pred[i] ==1 and expected[i] == 0.0):
                 FP +=1
+                falseposfile.write(f"{int(sample[i][0])},{int(sample[i][1])},{int(sample[i][2])},{int(sample[i][3])},{int(sample[i][4])}\n")
             else:
                 print(pred[i],expected[i])
         print("Accuracy: ", correct/len(pred),
@@ -89,6 +99,10 @@ class logistical_regression():
               "\n   +        -"
               "\n+ ",TP,"  ", FN,
               "\n- ",FP, "  ", TN)
+        falsenegfile.flush()
+        falsenegfile.close()
+        falseposfile.flush() 
+        falseposfile.close()
                 
 
 
