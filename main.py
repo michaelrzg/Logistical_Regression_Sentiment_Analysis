@@ -132,7 +132,7 @@ def extract1(sample):
     x1 = len([x for x in sample.split(" ") if poswordsdict.get(x,False)==x])     
     x2 =len([x for x in sample.split(" ") if negwwordsdict.get(x,False)==x])
     x3 = 0
-    x4 = len(sample.split(" "))
+    x4 = math.log(len(sample.split(" ")))
     x5 = sample.count("love") + sample.count("amazing")  + sample.count("loved")+  + sample.count("great")
     ngrams = extract_ngrams(sample,2)
     for n in ngrams:
@@ -157,7 +157,7 @@ def load_features(training=True):
         file = open("dataset/testing_features.csv")
     for line in file:
         line =line.split(",")
-        x = [int(line[0]), int(line[1]), int(line[2]), int(line[3]), float(line[4]), int(line[5].replace("\n",""))]
+        x = [int(line[0]), int(line[1]), int(line[2]), float(line[3]), float(line[4]), int(line[5].replace("\n",""))]
         output.append(x)
     return output
 
