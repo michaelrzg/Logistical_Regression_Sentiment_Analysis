@@ -37,6 +37,7 @@ class preprocess:
                 x = x.replace("\"", "")
                 x = x.replace(")", "")
                 x = x.replace("(", "")
+                x = x.replace("?", "")
                 if x.count("\n")>0:
                     addnewline = False
                 test_data_output_file.write(f"{x.lower()} ")
@@ -60,6 +61,7 @@ class preprocess:
                 x = x.replace("\"", "")
                 x = x.replace(")", "")
                 x = x.replace("(", "")
+                x = x.replace("?", "")
                 if x.count("\n")>0:
                     addnewline = False
                 train_data_output_file.write(f"{x.lower()} ")
