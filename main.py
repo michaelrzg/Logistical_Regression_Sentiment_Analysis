@@ -132,7 +132,7 @@ def extract1(sample):
     x1 = len([x for x in sample.split(" ") if poswordsdict.get(x,False)==x])     
     x2 =len([x for x in sample.split(" ") if negwwordsdict.get(x,False)==x])
     x3 = 0
-    x4 = math.log(len(sample.split(" ")))
+    x4 = len([x for x in sample.split(" " )if x in ['i', 'me', 'my', 'mine', 'we', 'us', 'our', 'ours']])
     x5 = sample.count("love") + sample.count("amazing")  + sample.count("loved")+  + sample.count("great")
     ngrams = extract_ngrams(sample,2)
     for n in ngrams:

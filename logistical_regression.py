@@ -8,7 +8,7 @@ class logistical_regression():
     representing the probability of a given class. If output > .5, it returns class 1,
     else output <= .5 and returns class 0."""
     #constructor
-    def __init__(self, learning_rate=.01,itterations=1000) -> None:
+    def __init__(self, learning_rate=.1,itterations=5000) -> None:
         self.lr = learning_rate
         self.itterations = itterations
         self.weights = None
