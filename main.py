@@ -6,7 +6,6 @@ import ssl # for initilizing stopwords list
 import math # for implementing sigmoid
 import numpy as np # for numpy array
 import threading # for efficientcy
-import concurrent.futures # for thread management
 import time
 from preprocess_dataset import preprocess # from our preprocess_dataset.py file
 from logistical_regression import logistical_regression # from our logistical_regression.py file
@@ -39,7 +38,7 @@ def initilize():
 
 def top1000():
     topwords = []
-    for i in range(50):
+    for i in range(10):
         max_key = max(BOW, key=BOW.get)
         topwords.append(max_key)
         BOW.pop(max_key)
@@ -146,14 +145,12 @@ def extract1(sample):
     x1 = len([x for x in sample.split(" ") if poswordsdict.get(x,False)==x])     
     x2 =len([x for x in sample.split(" ") if negwwordsdict.get(x,False)==x])
     x3 = 0
-    x4 = len([x for x in sample.split(" " )if x in topwords])
+    x4 = sample.count("not")
     x5 = sample.count("love") + sample.count("amazing")  + sample.count("loved")+  + sample.count("great")
     ngrams = extract_ngrams(sample,2)
     for n in ngrams:
-        if negwwordsdict.get(n[0],False) or n[0] == "not" or n[0] == "dont"  or n[0] == "don't" or n[0] == "didn't" and poswordsdict.get(n[1],False):
+        if negwwordsdict.get(n[0],False) or n[0] == "not" or n[0] == "dont"  or n[0] == "don't" or n[0] == "didn't" or n[0] == "didnt"  and poswordsdict.get(n[1],False):
             # negative negation 
-            x2+=3
-            x1-=1
             x3+=1
     return (x1,x2,x3,x4,x5)
 def extract_ngrams(text, n):
