@@ -6,11 +6,11 @@ import ssl # for initilizing stopwords list
 import math # for implementing sigmoid
 import numpy as np # for numpy array
 import threading # for efficientcy
-import concurrent.futures # for thread management
 import time
 from preprocess_dataset import preprocess # from our preprocess_dataset.py file
 from logistical_regression import logistical_regression # from our logistical_regression.py file
 import os
+BOW = dict()
 def initilize():
     """Initilizees the model by downloading stopwords list, loading data, and preprocessing datasetsS"""
     #download list of stopwords from nltk
@@ -27,12 +27,22 @@ def initilize():
     # load preprocessed data
     data = load_data()
     # if features not extracted, run extract features()
-    
-
+    for sentence in BOW_Vocab:
+        for x in sentence.split(" "):
+            if str(x) in BOW:
+                BOW[str(x)] = BOW.get(x) +1
+            else:
+                BOW[str(x)] =1
     
     return data
 
-
+def top1000():
+    topwords = []
+    for i in range(10):
+        max_key = max(BOW, key=BOW.get)
+        topwords.append(max_key)
+        BOW.pop(max_key)
+    return topwords
 def download_stopwords():
     """ Download nessessary list of stopwords from nltk """
     try:
@@ -44,7 +54,7 @@ def download_stopwords():
     nltk.download('stopwords')
     return
 
-
+BOW_Vocab = []
 def load_data():
     """Load data (positive words, negative words, training set and testing set)
     
@@ -70,6 +80,8 @@ def load_data():
             x = line.split(",")
             x[1] = x[1].replace("\n","")
             x[1] = x[1].lower()
+            if(int(x[0]) ==1):
+                BOW_Vocab.append(x[1])
             train_set.append([x[1],int(x[0])])
     except FileNotFoundError:
         print("one or more files not found. Check paths")
@@ -128,18 +140,17 @@ def extract_features(dataset, training=True):
         if count%(len(dataset)/5)==0:
             print("Progress on thread ID ", threading.get_ident(), ": ", 100*(count/len(dataset)), "%")
     return
+topwords = top1000()
 def extract1(sample):
     x1 = len([x for x in sample.split(" ") if poswordsdict.get(x,False)==x])     
     x2 =len([x for x in sample.split(" ") if negwwordsdict.get(x,False)==x])
     x3 = 0
-    x4 = len([x for x in sample.split(" " )if x in ['i', 'me', 'my', 'mine', 'we', 'us', 'our', 'ours']])
+    x4 = sample.count("not")
     x5 = sample.count("love") + sample.count("amazing")  + sample.count("loved")+  + sample.count("great")
     ngrams = extract_ngrams(sample,2)
     for n in ngrams:
-        if negwwordsdict.get(n[0],False) or n[0] == "not" or n[0] == "dont"  or n[0] == "don't" or n[0] == "didn't" and poswordsdict.get(n[1],False):
+        if negwwordsdict.get(n[0],False) or n[0] == "not" or n[0] == "dont"  or n[0] == "don't" or n[0] == "didn't" or n[0] == "didnt"  and poswordsdict.get(n[1],False):
             # negative negation 
-            x2+=3
-            x1-=1
             x3+=1
     return (x1,x2,x3,x4,x5)
 def extract_ngrams(text, n):
