@@ -37,7 +37,6 @@ class preprocess:
                 x = x.replace("\"", "")
                 x = x.replace(")", "")
                 x = x.replace("(", "")
-                x = x.replace("?", "")
                 x = x.replace("-", "")
                 if x.count("\n")>0:
                     addnewline = False
@@ -62,7 +61,6 @@ class preprocess:
                 x = x.replace("\"", "")
                 x = x.replace(")", "")
                 x = x.replace("(", "")
-                x = x.replace("?", "")
                 x = x.replace("-", "")
                 if x.count("\n")>0:
                     addnewline = False
