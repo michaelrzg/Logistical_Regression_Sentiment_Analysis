@@ -8,7 +8,7 @@ class logistical_regression():
     representing the probability of a given class. If output > .5, it returns class 1,
     else output <= .5 and returns class 0."""
     #constructor
-    def __init__(self, learning_rate=.1,itterations=5000) -> None:
+    def __init__(self, learning_rate=.01,itterations=1000) -> None:
         self.lr = learning_rate
         self.itterations = itterations
         self.weights = None
@@ -19,10 +19,18 @@ class logistical_regression():
         """implements sigmoid function y = 1/ (1+e^-z)"""
         return 1 / (1 + np.exp(-x))
     
-    def fit(self, sample_X, desired_attribute_y):
+    def fit(self, sample_X, desired_attribute_y):    
         """This function is our 'training' step. 
         By taking in features X and desires output y, we fit a model around this data.
         """
+        try:
+            self.weights = np.loadtxt('weights.txt')
+            bias = np.loadtxt('weights.txt')
+            self.bias = bias[0]
+            print("Loaded pretriained weights!")
+            return
+        except:
+            print("Coult not load pretrained weights!")
         # .shape returns # of rows, # of columns
         n_samples, n_features = sample_X.shape
         #initilize our weights to 0
@@ -50,6 +58,8 @@ class logistical_regression():
             # we are now "decending" towards local minimum of loss function
             self.weights = self.weights  - (self.lr * grad_weights)
             self.bias = self.bias - (self.lr * grad_bias)
+        np.savetxt('weights.txt',self.weights)
+        np.savetxt('bias.txt',[self.bias])
 
     def predict(self, sample):
         """Use our trained weights and bias to predict a novel set and return set of labels"""

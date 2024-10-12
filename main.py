@@ -65,7 +65,7 @@ def load_data():
         # load negative words into array
         negative_words = nltk.corpus.opinion_lexicon.negative()
         # load testing dataset into array of tuples [data:string, label:int]
-        test = open("dataset/test_formatted.csv", encoding="utf8")
+        test = open("dataset/test_amazon.csv", encoding="utf8")
         test_set = []
         for line in test:
             x = line.split(",")
@@ -74,7 +74,7 @@ def load_data():
             test_set.append([x[1],int(x[0])])
         
         # load training dataset into array of tuples [data:string, label:int]
-        training = open("dataset/train_formatted.csv", encoding="utf8")
+        training = open("dataset/train_amazon.csv", encoding="utf8")
         train_set = []
         for line in training:
             x = line.split(",")
@@ -105,41 +105,20 @@ data = initilize()
 poswordsdict = dict(zip(data[0],data[0]))
 negwwordsdict = dict(zip(data[1],data[1]))
 lock = threading.Lock()
-def extract_features(dataset, training=True):
-    """ Takes in set of tokens and returns feature set
-    
-    output X = [x1,x2,x3,x4,x5, c]
-    
-    x1 = # of positive lexicons 
 
-    x2 = # of negative lexicons
-
-    x3 = if no ∈ sample (either 0 or 1 value)
-
-    x4 = count("!")
-
-    x5 = log(word count) 
-    
-    c = class (1 = positive class 0 = negative class)
-    """
-
-    count=0
-    for sample in dataset:
-        
-
-
-        lock.acquire()
-        if training:
-            out = open("dataset/training_features.csv",'a')
-        else:
-            out = open("dataset/testing_features.csv", 'a')
-        x1,x2,x3,x4,x5 = extract1(sample[0])
-        out.write(f"{x1},{x2},{x3},{x4},{x5},{sample[1]}\n")
-        lock.release()
-        count+=1
-        if count%(len(dataset)/5)==0:
-            print("Progress on thread ID ", threading.get_ident(), ": ", 100*(count/len(dataset)), "%")
-    return
+def extract_features(dataset,):
+    weightspre = []
+    from sentence_transformers import SentenceTransformer
+    model_st = SentenceTransformer('distilroberta-base')
+    counter=0
+    N = len(dataset)
+    for d in dataset:
+        counter+=1
+        encoded_seq =  model_st.encode(d[0])
+        weightspre.append((encoded_seq,d[1]))
+        if counter%5000 ==0:        
+            print((counter/N)*100)
+    return weightspre
 topwords = top1000()
 def extract1(sample):
     x1 = len([x for x in sample.split(" ") if poswordsdict.get(x,False)==x])     
@@ -248,6 +227,10 @@ negative_words = data[1]
 training_set = data[2]
 testing_set = data[3]
 
+
+training_emb = extract_features(training_set)
+print("length of emb: " ,len(training_emb))
+testing_emb =  extract_features(testing_set)
 # load features from training data and convert to numpy array
 training_features = load_features()
 training_features = np.array(training_features)
@@ -260,8 +243,8 @@ testing_features = np.array(testing_features)
 logreg = logistical_regression()
 # fit (train) the model on our training set
 print("Training...")
-logreg.fit(training_features[:,[0,1,2,3,4]],training_features[:,5])
+logreg.fit(np.array([x[0] for x in training_emb]),[x[1] for x in training_emb])
 print("Testing...")
-logreg.run(testing_features[:,[0,1,2,3,4]],testing_features[:,5])
+logreg.run(np.array([x[0] for x in testing_emb]),[x[1] for x in testing_emb])
 #print(testing_features)
 live_demo()
