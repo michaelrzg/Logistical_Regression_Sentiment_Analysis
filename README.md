@@ -2,7 +2,10 @@ This repo holds implementation of a logistic regression algorithm in Python used
 
 Step by Step Guide:
 
-<b>Step 1:</b><br> <br>The first step is data preprocessing. We will start preprocessing by removing stop words from our data.<br>
+# Testing
+
+## <b>Step 1:</b><br> <br>The first step is data preprocessing. We will start preprocessing by removing stop words from our data.<br>
+
 The preprocess() function reads our csv raw data and outputs 2 new files:<br>
 -test_formatted.csv : test_amazon.csv with all stopwords removed<br>
 -train_formatted.csv : train_amazon.csv with all stopwords removed<br><br>
@@ -12,7 +15,8 @@ notes:
 - ie this will only run the first time you run main.py
 - you can run this portion of the program manually by running the preprocess_dataset.py script
 
-<br><b>Step 2:</b><br><br> The second step is to extract features from our now preprocessed data.
+## <br><b>Step 2:</b><br><br> The second step is to extract features from our now preprocessed data.
+
 The extract_features() function takes in both test_formatted.csv and train_formatted.csv and outputs 2 new files:<br>
 
 -testing_features.csv : holds all features as well as class labels from testing dataset<br>
@@ -30,13 +34,15 @@ notes:
   <br>c = class (1 = positive class 0 = negative class)
 - if testing_features.csv and training_features.csv already exist this function will not run <br>
 
-<br><b>Step 3:</b><br><br> Next is to load features from our feature files.<br>
+## <br><b>Step 3:</b><br><br> Next is to load features from our feature files.<br>
+
 The load_features() function will run every time the model is run, and will load our features from training_features.csv and testing_features.csv into memory. <br>Below is an example of what a feature looks like: <br><br>
 (Positive word count, Negative word count, "no" count, "!" count, log(word count), class)
 
 - 2 , 0 , 0 , 1 , 1.1139433523068367 , 1
 
-<br><b>Step 4:</b><br><br>
+## <br><b>Step 4:</b><br><br>
+
 Its time for our model to learn the features. Firstly, we 'fit' the model to our features which is our training step.<br><br>
 For our features set X and label set y, we call logistical_regression.fit(X,y):<br>
 X = m x n<br>
@@ -52,6 +58,19 @@ For n itterations:<br>
 - We then multiply these values with our learning rate and subtract them from our weights and bias to determine our new weights for the next itteration
 - By the end of n itterations, we have 'optimized' our weights and biases based on slowly approaching our local minimum for our loss funciton
 
-<br><b>Step 5:</b><br><br>
+## <br><b>Step 5:</b><br><br>
+
 Final step is to run and generate our accuracy and confusion matrix:<br>
 The logistical_regression.run() function takes in a sample and its expected output, and runs the predict on that sample. It then calculates the accuracy as a function of correct/total and calculates the confusion matrix, storing our true positive (TP), true negative (TN), false positive (FP), False Negative(FN) values.
+
+# Results
+
+Here are our results with Hand Picked Features (above) and Embeddings based Features (embeddings branch):
+
+## Hand Picked:
+
+Our hand picked features did well, averaging around 75% accuracy.
+
+## Embeddings based:
+
+Our embeddings based features did slightly better, averaging around 76% accuracy.
