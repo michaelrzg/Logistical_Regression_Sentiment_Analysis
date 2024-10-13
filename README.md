@@ -77,9 +77,15 @@ Here are our results with Hand Picked Features (above) and Embeddings based Feat
 
 Our hand picked features did well, averaging around 75% accuracy.
 
+![handpickedfeaturesperformance](https://github.com/user-attachments/assets/11ea0f0c-6dc6-46a1-9888-82e503154a8f)
+
+
 ## Embeddings based:
 
 Our embeddings based features did slightly better, averaging around 76% accuracy.
+
+![embeddingsfeatureperformance](https://github.com/user-attachments/assets/59d4bb21-b6c6-4b5c-b224-cf338c0d6983)
+
 
 # Conclusion
 
