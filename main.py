@@ -142,12 +142,19 @@ def extract_features(dataset, training=True):
     return
 topwords = top1000()
 def extract1(sample):
-    x1 = len([x for x in sample.split(" ") if poswordsdict.get(x,False)==x])     
+    # how many tokens appear in positive lexicon dict
+    x1 = len([x for x in sample.split(" ") if poswordsdict.get(x,False)==x])    
+    # how many tokens apppear in negative lexicon doct 
     x2 =len([x for x in sample.split(" ") if negwwordsdict.get(x,False)==x])
+    # counts negations 
     x3 = 0
+    # how many '?' tokens exist in sample
     x4 = sample.count("?")
+    # how many key positive words appear in sample
     x5 = sample.count("love") + sample.count("amazing")  + sample.count("loved")+  + sample.count("great")
+    # extract pairs of 2 words to count number of negations
     ngrams = extract_ngrams(sample,2)
+    # count number of negations
     for n in ngrams:
         if negwwordsdict.get(n[0],False) or n[0] == "not" or n[0] == "dont"  or n[0] == "don't" or n[0] == "didn't" or n[0] == "didnt"  and poswordsdict.get(n[1],False):
             # negative negation 
